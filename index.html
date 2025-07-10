@@ -1,0 +1,167 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+    }.fireworks {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1;
+}
+
+canvas {
+  display: block;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.click-button {
+  padding: 20px 40px;
+  background: linear-gradient(145deg, #1565c0, #1e88e5);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  animation: shake 0.5s ease-in-out infinite paused;
+  box-shadow: 0 0 20px rgba(30, 136, 229, 0.8);
+  transition: transform 0.2s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+}
+
+.message {
+  display: none;
+  margin-top: 40px;
+  max-width: 600px;
+  font-size: 20px;
+  line-height: 1.6;
+}
+
+#loopVideo {
+  display: none;
+  width: 300px;
+  border-radius: 12px;
+  margin-top: 20px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+  </style>
+</head>
+<body>
+  <div class="fireworks">
+    <canvas id="fireworkCanvas"></canvas>
+  </div>  <div class="container">
+    <button class="click-button" id="clickButton">Click Here</button>
+    <div class="message" id="message">
+      <h1>Happy Birthday🥳</h1>
+      <p>ขอให้ปีนี้เป็นปีที่เต็มไปด้วยความสุขความสำเร็จ <br>
+      สุขภาพแข็งแรงเจอแต่สิ่งดีๆ ไม่ปวดหัวกับลูกค้า <br> 
+      และไม่เหนื่อยกับงานมากรู้นะว่าโหมงานหนัก แต่ก็เท่ดีนะ มีแค่นี้แหละPorsche/BMWรออยู่ครับ5555💙✨</p>
+    </div>
+    <!-- วิดีโอ Loop หลังคลิก -->
+    <video id="loopVideo" src="hbd.mp4" loop autoplay muted playsinline></video>
+    <!-- เพลงวันเกิดหลังคลิก -->
+    <audio id="birthdayMusic" src="aaa.mp3" loop></audio>
+  </div>  <script>
+    const button = document.getElementById('clickButton');
+    const message = document.getElementById('message');
+    const music = document.getElementById('birthdayMusic');
+    const video = document.getElementById('loopVideo');
+
+    let shakeInterval = setInterval(() => {
+      button.style.animationPlayState = 'running';
+      setTimeout(() => button.style.animationPlayState = 'paused', 500);
+    }, 2000);
+
+    button.addEventListener('click', () => {
+      button.style.display = 'none';
+      message.style.display = 'block';
+      video.style.display = 'block';
+      music.play ();
+    });
+
+    // Firework Animation
+    const canvas = document.getElementById('fireworkCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const fireworks = [];
+
+    function createFirework() {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height / 2;
+      const colors = ['#ff4d4d', '#ffd11a', '#66ff66', '#33ccff', '#ff99ff', '#ffffff', '#00e5ff'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      for (let i = 0; i < 60; i++) {
+        fireworks.push({
+          x,
+          y,
+          angle: Math.random() * 2 * Math.PI,
+          radius: Math.random() * 2 + 1,
+          speed: Math.random() * 6 + 2,
+          color,
+          life: 60
+        });
+      }
+    }
+
+    function drawFireworks() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (let i = fireworks.length - 1; i >= 0; i--) {
+        const f = fireworks[i];
+        const dx = Math.cos(f.angle) * f.speed;
+        const dy = Math.sin(f.angle) * f.speed;
+        f.x += dx;
+        f.y += dy;
+        f.life--;
+
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+        ctx.fillStyle = f.color;
+        ctx.fill();
+
+        if (f.life <= 0) {
+          fireworks.splice(i, 1);
+        }
+      }
+    }
+
+    function animate() {
+      drawFireworks();
+      requestAnimationFrame(animate);
+    }
+
+    setInterval(createFirework, 700);
+    animate();
+  </script></body>
+</html>
